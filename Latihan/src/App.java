@@ -1,6 +1,8 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,8 +29,43 @@ public class App {
             }
         }
 
-        for (String peminjaman : daftarPeminjaman) {
-            System.out.println(peminjaman);
+        List<Buku> bukuSedangDipinjam = new ArrayList<>();
+        while (!daftarPeminjaman.isEmpty()) {
+            String dataPeminjaman = daftarPeminjaman.removeFirst();
+            String[] bagian = dataPeminjaman.split("#");
+            String idAnggota = bagian[0];
+            String isbn = bagian[1];
+            boolean isAnggotaValid = false;
+            String namaAnggota = "";
+            for (Anggota anggota : daftarAnggota) {
+                if (anggota.idAnggota.equals(idAnggota)) {
+                    isAnggotaValid = true;
+                    namaAnggota = anggota.nama;
+                    break;
+                }
+            }
+
+            boolean isBukuValid = daftarBuku.containsKey(isbn);
+            boolean isSedangDipinjam = false;
+
+            for (Buku b : bukuSedangDipinjam) {
+                if (b.isbn.equals(isbn)) {
+                    isSedangDipinjam = true;
+                    break;
+                }
+            }
+
+            if (!isAnggotaValid) {
+                System.out.println("Gagal Anggota dengan ID (" + idAnggota + ") tidak terdaftar.");
+            } else if (!isBukuValid) {
+                System.out.println("Gagal Buku dengan ISBN (" + isbn + ") tidak ditemukan di katalog.");
+            } else if (isSedangDipinjam) {
+                System.out.println("Gagal Buku " + daftarBuku.get(isbn).judul + " sedang dipinjam oleh orang lain.");
+            } else {
+                Buku bukuDipinjam = daftarBuku.get(isbn);
+                bukuSedangDipinjam.add(bukuDipinjam);
+                System.out.println(namaAnggota + " meminjam buku '" + bukuDipinjam.judul + "'.");
+            }
         }
     }
 }
